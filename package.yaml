@@ -64,6 +64,7 @@ dependencies:
 - dependent-sum
 - stm
 - async
+- http-types
 
 library:
   source-dirs: src

@@ -1,11 +1,13 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Reflex.Server
   ( host,
+    defaultSettings,
     writeResponse,
-    HasServerEvents (..),
+    HasServerEvents(..),
   )
 where
 
@@ -25,7 +27,16 @@ import Reflex.Host.Class
 import Reflex.Server.WaiApp
 
 -- | Provides an implementation of the 'HasServerEvents' type class.
-newtype ReflexServerT t (m :: Type -> Type) a = MReflexServer {unReflexServerT :: (ReaderT (ServerEvents t) m a)}
+newtype ReflexServerT t (m :: Type -> Type) a = MkReflexServerT {unReflexServerT :: (ReaderT (ServerEvents t) m a)}
+  deriving newtype (MonadReader (ServerEvents t))
+
+deriving instance (ReflexHost t, Functor m)        => Functor (ReflexServerT t m)
+deriving instance (ReflexHost t, Applicative m)    => Applicative (ReflexServerT t m)
+deriving instance (ReflexHost t, Monad m)          => Monad (ReflexServerT t m)
+deriving instance (ReflexHost t, MonadFix m)       => MonadFix (ReflexServerT t m)
+deriving instance (ReflexHost t, MonadIO m)        => MonadIO (ReflexServerT t m)
+deriving instance ReflexHost t                     => MonadTrans (ReflexServerT t)
+deriving instance (ReflexHost t, TriggerEvent t m) => TriggerEvent t (ReflexServerT t m)
 
 type ConcreteReflexServer =
   ReflexServerT Spider (PostBuildT Spider (PerformEventT Spider (SpiderHost Global)))
@@ -44,23 +55,33 @@ class HasServerEvents t m | m -> t where
   getRequest :: m (Event t (RequestToken, Request))
   getResponseQue :: m (Que (RequestToken, Response))
 
+
+instance (Monad m, ReflexHost t) => HasServerEvents t (ReflexServerT t m) where
+  getPostBuildEvent = serverEventsPostBuildEvent <$> ask
+  getRequest = serverEventsRequest <$> ask
+  getResponseQue = serverEventsResponseQue <$> ask
+
+instance (ReflexHost t, PerformEvent t m) => PerformEvent t (ReflexServerT t m) where
+  type Performable (ReflexServerT t m) = ReflexServerT t (Performable m)
+  performEvent_ = MkReflexServerT . performEvent_ . fmap unReflexServerT
+  performEvent  = MkReflexServerT . performEvent  . fmap unReflexServerT
+
 data ServerSettings = MkSettings
   { serverSettingsWarpSettings :: Warp.Settings,
     serverSettingsWarpSocket :: Socket
   }
 
--- defaultSettings :: ServerSettings
--- defaultSettings = MkSettings
---   { serverSettingsWarpSettings = Warp.defaultSettings
---   , serverSettingsWarpSocket :: Socket
---   }
+defaultSettings :: ServerSettings
+defaultSettings = MkSettings
+  { serverSettingsWarpSettings = Warp.defaultSettings
+  }
 
 host :: ServerSettings -> ConcreteReflexServer () -> IO ()
 host MkSettings {..} server = do
   outRequests <- newTQueueIO
   serverEventsResponseQue <- newTQueueIO
   withAsync
-    ( Warp.runSettingsSocket serverSettingsWarpSettings serverSettingsWarpSocket $
+    ( Warp.runSettings serverSettingsWarpSettings $
         aRequestThread outRequests serverEventsResponseQue
     )
     $ \_serverHandle -> runSpiderHost $ do

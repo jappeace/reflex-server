@@ -2,6 +2,7 @@
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE LinearTypes #-}
 
 module Reflex.Server
   ( host,
@@ -19,7 +20,6 @@ import Control.Monad.Ref
 import Control.Monad.STM
 import Data.Dependent.Sum (DSum ((:=>)))
 import Data.Kind
-import Network.Socket
 import Network.Wai
 import qualified Network.Wai.Handler.Warp as Warp
 import Reflex hiding (Request, Response)
@@ -67,8 +67,7 @@ instance (ReflexHost t, PerformEvent t m) => PerformEvent t (ReflexServerT t m) 
   performEvent  = MkReflexServerT . performEvent  . fmap unReflexServerT
 
 data ServerSettings = MkSettings
-  { serverSettingsWarpSettings :: Warp.Settings,
-    serverSettingsWarpSocket :: Socket
+  { serverSettingsWarpSettings :: Warp.Settings
   }
 
 defaultSettings :: ServerSettings

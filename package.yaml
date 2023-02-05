@@ -56,15 +56,13 @@ dependencies:
 - reflex
 - warp
 - wai
-- network
 - uuid
+- bytestring
 - ref-tf
 - mtl
-- random
 - dependent-sum
 - stm
 - async
-- http-types
 
 library:
   source-dirs: src
@@ -77,8 +75,12 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -Wno-unused-packages
     dependencies:
       - reflex-server
+      - http-types
+      - text
+      - binary
 
 tests:
   unit:

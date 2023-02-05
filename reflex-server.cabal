@@ -55,11 +55,9 @@ library
   build-depends:
       async
     , base >=4.7 && <5
+    , bytestring
     , dependent-sum
-    , http-types
     , mtl
-    , network
-    , random
     , ref-tf
     , reflex
     , stm
@@ -94,19 +92,20 @@ executable exe
       StandaloneDeriving
       OverloadedStrings
       TypeApplications
-  ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints -Wincomplete-record-updates -Widentities -Wcpp-undef -fwarn-tabs -Wpartial-fields -fdefer-diagnostics -Wunused-packages -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints -Wincomplete-record-updates -Widentities -Wcpp-undef -fwarn-tabs -Wpartial-fields -fdefer-diagnostics -Wunused-packages -threaded -rtsopts -with-rtsopts=-N -Wno-unused-packages
   build-depends:
       async
     , base >=4.7 && <5
+    , binary
+    , bytestring
     , dependent-sum
     , http-types
     , mtl
-    , network
-    , random
     , ref-tf
     , reflex
     , reflex-server
     , stm
+    , text
     , uuid
     , wai
     , warp
@@ -143,11 +142,9 @@ test-suite unit
   build-depends:
       async
     , base >=4.7 && <5
+    , bytestring
     , dependent-sum
-    , http-types
     , mtl
-    , network
-    , random
     , ref-tf
     , reflex
     , reflex-server

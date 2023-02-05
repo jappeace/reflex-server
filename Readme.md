@@ -5,7 +5,7 @@
 [![Jappiejappie](https://img.shields.io/badge/discord-jappiejappie-black?logo=discord)](https://discord.gg/Hp4agqy)
 [![Hackage version](https://img.shields.io/hackage/v/reflex-server.svg?label=Hackage)](https://hackage.haskell.org/package/reflex-server) 
 
-> Up the mountain u went with ash, down u come with fire, what's wrong with y'all. 
+> I'm sorry dizzy
 
 This attempts to make a reflex web server, out of....
 we'll see what sticks.

@@ -1,13 +1,16 @@
 [![https://jappieklooster.nl](https://img.shields.io/badge/blog-jappieklooster.nl-lightgrey)](https://jappieklooster.nl/tag/haskell.html)
 [![Jappiejappie](https://img.shields.io/badge/twitch.tv-jappiejappie-purple?logo=twitch)](https://www.twitch.tv/jappiejappie)
 [![Jappiejappie](https://img.shields.io/badge/youtube-jappieklooster-red?logo=youtube)](https://www.youtube.com/channel/UCQxmXSQEYyCeBC6urMWRPVw)
-[![Githbu actions build status](https://img.shields.io/github/workflow/status/jappeace/haskell-template-project/Test)](https://github.com/jappeace/haskell-template-project/actions)
+[![Githbu actions build status](https://img.shields.io/github/workflow/status/jappeace/haskell-reflex-server-project/Test)](https://github.com/jappeace/haskell-reflex-server-project/actions)
 [![Jappiejappie](https://img.shields.io/badge/discord-jappiejappie-black?logo=discord)](https://discord.gg/Hp4agqy)
-[![Hackage version](https://img.shields.io/hackage/v/template.svg?label=Hackage)](https://hackage.haskell.org/package/template) 
+[![Hackage version](https://img.shields.io/hackage/v/reflex-server.svg?label=Hackage)](https://hackage.haskell.org/package/reflex-server) 
 
-> The eye that looks ahead to the safe course is closed forever.
+> Up the mountain u went with ash, down u come with fire, what's wrong with y'all. 
 
-Haskell project template.
+This attempts to make a reflex web server, out of....
+we'll see what sticks.
+
+Haskell project reflex-server.
 
 Set up cabal within a nix shell.
 If you like nix this is a good way of doing haskell development.
@@ -31,20 +34,20 @@ Comes with:
 Assuming the name of your new project is `new-project`.
 
 ```
-git clone git@github.com:jappeace/haskell-template-project.git new-project
+git clone git@github.com:jappeace/haskell-reflex-server-project.git new-project
 cd new-project
 ```
 
 + [ ] Edit package.yaml,
-    + [ ] find and replace template with `new-project`
+    + [ ] find and replace reflex-server with `new-project`
     + [ ] Update copyright
     + [ ] Update github
 + [ ] Run `make hpack` to update cabal files
-+ [ ] remove template.cabal
++ [ ] remove reflex-server.cabal
 + [ ] Edit Changelog.md
-  + [ ] replace template with `new-project`
+  + [ ] replace reflex-server with `new-project`
   + [ ] Also describe your version 1.0.0 release.
-+ [ ] Edit default.nix, replace template with `new-project`.
++ [ ] Edit default.nix, replace reflex-server with `new-project`.
 + [ ] Edit copyright in LICENSE
 + [ ] Edit `nix/bundle.nix` to point to the executable
 + [ ] Edit `nix/ci.nix` and `nix/pkgs.nix` for name of package
@@ -52,11 +55,11 @@ cd new-project
 
 #### Reconfigure remotes
 ```
-git remote add template git@github.com:jappeace/haskell-template-project.git
+git remote add reflex-server git@github.com:jappeace/haskell-reflex-server-project.git
 git remote set-url origin git@github.com:YOUR-ORG-OR-USER-NAME/new-project.git
 ```
 
-We can get template updates like this if we want to by doing `git pull template`.
+We can get reflex-server updates like this if we want to by doing `git pull reflex-server`.
 There will be a large amount of conflicts, but the merge commit should solve them permanently.
 
 #### Readme
@@ -69,7 +72,7 @@ There will be a large amount of conflicts, but the merge commit should solve the
   I used Kant because
   he dealt with the question "what is truth" a lot.
 + [ ] Truncate this checklist
-+ [ ] Truncate motivation for using  this template
++ [ ] Truncate motivation for using  this reflex-server
 
 ### Tools
 Enter the nix shell.

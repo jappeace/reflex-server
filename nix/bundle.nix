@@ -1,4 +1,4 @@
-{ program ? import ../default.nix { }, run ? "/bin/template" }:
+{ program ? import ../default.nix { }, run ? "/bin/reflex-server" }:
 let
 nix-bundle-src = builtins.fetchGit {
     url = "https://github.com/matthewbauer/nix-bundle";

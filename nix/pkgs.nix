@@ -4,7 +4,7 @@ import ./pin.nix {
     packageOverrides = pkgs: {
         haskell = pkgs.lib.recursiveUpdate pkgs.haskell {
         packageOverrides = hpNew: hpOld: {
-            template = hpNew.callPackage ../default.nix {};
+            reflex-server = hpNew.callPackage ../default.nix {};
             };
         };
     };

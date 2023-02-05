@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Reflex.Server
+      Reflex.Server.WaiApp
   other-modules:
       Paths_reflex_server
   hs-source-dirs:

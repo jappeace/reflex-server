@@ -1,8 +1,11 @@
+{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Reflex.Server
   ( host,
+    writeResponse,
+    HasServerEvents (..),
   )
 where
 
@@ -14,16 +17,12 @@ import Control.Monad.Ref
 import Control.Monad.STM
 import Data.Dependent.Sum (DSum ((:=>)))
 import Data.Kind
-import Data.UUID
-import qualified Data.UUID.V4 as V4
 import Network.Socket
 import Network.Wai
 import qualified Network.Wai.Handler.Warp as Warp
-import Reflex (Event, Global, PostBuildT, Spider, SpiderHost, runPostBuildT, runSpiderHost)
+import Reflex hiding (Request, Response)
 import Reflex.Host.Class
-import Reflex.PerformEvent.Base
-import Reflex.TriggerEvent.Base
-import System.Random
+import Reflex.Server.WaiApp
 
 -- | Provides an implementation of the 'HasServerEvents' type class.
 newtype ReflexServerT t (m :: Type -> Type) a = MReflexServer {unReflexServerT :: (ReaderT (ServerEvents t) m a)}
@@ -34,21 +33,21 @@ type ConcreteReflexServer =
 runReflexServerT :: ReflexServerT t m a -> ServerEvents t -> m a
 runReflexServerT = runReaderT . unReflexServerT
 
-newtype RequestToken = MkRequestToken {untoken :: UUID}
-  deriving (Eq)
-
 data ServerEvents t = ServerEvents
   { serverEventsPostBuildEvent :: Event t (),
-    serverEventsRequest :: Event t (RequestToken, Request)
+    serverEventsRequest :: Event t (RequestToken, Request),
+    serverEventsResponseQue :: Que (RequestToken, Response)
   }
+
+class HasServerEvents t m | m -> t where
+  getPostBuildEvent :: m (Event t ())
+  getRequest :: m (Event t (RequestToken, Request))
+  getResponseQue :: m (Que (RequestToken, Response))
 
 data ServerSettings = MkSettings
   { serverSettingsWarpSettings :: Warp.Settings,
     serverSettingsWarpSocket :: Socket
   }
-
--- | I can't spell this
-type Que = TQueue
 
 -- defaultSettings :: ServerSettings
 -- defaultSettings = MkSettings
@@ -59,10 +58,10 @@ type Que = TQueue
 host :: ServerSettings -> ConcreteReflexServer () -> IO ()
 host MkSettings {..} server = do
   outRequests <- newTQueueIO
-  inResponses <- newTQueueIO
+  serverEventsResponseQue <- newTQueueIO
   withAsync
     ( Warp.runSettingsSocket serverSettingsWarpSettings serverSettingsWarpSocket $
-        aRequestThread outRequests inResponses
+        aRequestThread outRequests serverEventsResponseQue
     )
     $ \_serverHandle -> runSpiderHost $ do
       (serverEventsPostBuildEvent, trPostBuildRef) <- newEventWithTriggerRef
@@ -78,26 +77,18 @@ host MkSettings {..} server = do
       (readRef trPostBuildRef >>=) . mapM_ $ \tr ->
         fire [tr :=> Identity ()] $ return ()
 
-aRequestThread ::
-  Que (RequestToken, Request) ->
-  Que (RequestToken, Response) ->
-  Request ->
-  (Response -> IO ResponseReceived) ->
-  IO ResponseReceived
-aRequestThread outRequests inResponses request responseFun = do
-  reqId <- MkRequestToken <$> V4.nextRandom
-  atomically $ writeTQueue outRequests (reqId, request)
+      fix $ \loop -> do
+        (readRef trNewRequest >>=) . mapM_ $ \tr -> do
+          request <- liftIO $ atomically $ readTQueue outRequests
+          fire [tr :=> Identity request] $ return ()
+        loop
 
-  response <- fix $ \loop -> do
-    -- we need to be outside of atomically to loop
-    -- to give other threads a chance
-    mresponse <-
-      atomically $ do
-        (reqToken, response) <- peekTQueue inResponses
-        if (reqToken == reqId)
-          then Just . snd <$> readTQueue inResponses
-          else pure Nothing
-    case mresponse of
-      Just x -> pure x
-      Nothing -> loop
-  responseFun response
+writeResponse ::
+  (PerformEvent t m, MonadIO (Performable m), HasServerEvents t m) =>
+  Event t (RequestToken, Response) ->
+  m ()
+writeResponse ev = do
+  que <- getResponseQue
+  performEvent_ $
+    (\req -> liftIO $ atomically $ writeTQueue que req)
+      <$> ev

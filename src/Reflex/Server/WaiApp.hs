@@ -21,7 +21,7 @@ type Que = TQueue
 
 -- | the request token is used to associate a request with a response.
 --   this is required because reflex does it's own thread management.
-newtype RequestToken = MkRequestToken {untoken :: UUID}
+newtype RequestToken = MkRequestToken { _untoken :: UUID}
   deriving (Eq)
 
 aRequestThread ::

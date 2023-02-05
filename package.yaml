@@ -57,7 +57,6 @@ dependencies:
 - warp
 - wai
 - uuid
-- bytestring
 - ref-tf
 - mtl
 - dependent-sum
@@ -81,14 +80,4 @@ executables:
       - http-types
       - text
       - binary
-
-tests:
-  unit:
-    main:                Test.hs
-    source-dirs:
-    - test
-    dependencies:
-    - tasty
-    - tasty-quickcheck
-    - tasty-hunit
-    - reflex-server
+      - bytestring

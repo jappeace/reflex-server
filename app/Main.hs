@@ -3,7 +3,6 @@ module Main where
 import qualified Reflex.Server as Server
 import Network.Wai
 import Network.HTTP.Types.Status
-import Data.ByteString.Lazy
 import Data.Binary.Builder
 import Data.Text.Encoding
 import Data.Text

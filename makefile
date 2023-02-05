@@ -64,3 +64,6 @@ bundle:
 	rm -f result
 	nix-build nix/bundle.nix
 	mv result reflex-server
+
+hoogle:
+	hoogle server --local -p 8080

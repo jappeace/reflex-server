@@ -53,6 +53,17 @@ default-extensions:
 
 dependencies:
 - base >= 4.7 && < 5
+- reflex
+- warp
+- wai
+- network
+- uuid
+- ref-tf
+- mtl
+- random
+- dependent-sum
+- stm
+- async
 
 library:
   source-dirs: src

@@ -87,7 +87,8 @@ host MkSettings {..} server = do
       (serverEventsPostBuildEvent, trPostBuildRef) <- newEventWithTriggerRef
       (serverEventsRequest, trNewRequest) <- newEventWithTriggerRef
 
-      -- (this is async proly)
+      -- looks like it runs a frame and then puts frame running in fire
+      -- eg it's event driven
       ((), FireCommand fire) <-
         hostPerformEventT $
           flip runPostBuildT serverEventsPostBuildEvent $

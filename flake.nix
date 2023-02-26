@@ -27,6 +27,11 @@
                 ver = "1.1.5";
                 sha256 = "sha256-C4V8WrDSo2RnPPFfoXATmjn++bBBa1ABS5ASeb2IQlQ=";
                 } {};
+          transformers-compat = hnew.callHackageDirect {
+                pkg = "transformers-compat";
+                ver = "0.6.6";
+                sha256 = "sha256-xDCrZcvJKwtPjp8v86Ze1rBvzbJyEcfQqRHg6gxYHzk=";
+                } {};
         };
       };
     in

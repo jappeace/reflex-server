@@ -17,6 +17,11 @@
       hpkgs = pkgs.haskell.packages.ghc943.override {
         overrides = hold: hnew: {
           template-project = hnew.callCabal2nix "template-project" ./. { };
+          reflex = hnew.callHackageDirect {
+                pkg = "reflex";
+                ver = "0.9.0.0";
+                sha256 = "sha256-Kw7R7x8BL/kmOU1CeWgRYXO5q+JuvB+M6tzF8SfUakU=";
+                } {};
         };
       };
     in

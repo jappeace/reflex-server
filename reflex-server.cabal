@@ -105,6 +105,7 @@ executable exe
     , reflex-server
     , stm
     , text
+    , transformers
     , uuid
     , wai
     , warp

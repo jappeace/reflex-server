@@ -3,6 +3,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE LinearTypes #-}
+{-# LANGUAGE DerivingStrategies #-}
 
 module Reflex.Server
   ( host,

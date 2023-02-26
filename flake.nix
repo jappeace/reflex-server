@@ -22,6 +22,11 @@
                 ver = "0.9.0.0";
                 sha256 = "sha256-Kw7R7x8BL/kmOU1CeWgRYXO5q+JuvB+M6tzF8SfUakU=";
                 } {};
+          mmorph = hnew.callHackageDirect {
+                pkg = "mmorph";
+                ver = "1.1.5";
+                sha256 = "sha256-C4V8WrDSo2RnPPFfoXATmjn++bBBa1ABS5ASeb2IQlQ=";
+                } {};
         };
       };
     in

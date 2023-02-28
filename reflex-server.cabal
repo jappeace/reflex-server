@@ -1,4 +1,4 @@
-cabal-version: 1.12
+cabal-version: 2.2
 
 -- This file has been generated from package.yaml by hpack version 0.34.7.
 --
@@ -81,8 +81,8 @@ library
     , warp
 
 executable exe
-  main-is: Main.hs
   import: common-options
+  main-is: Main.hs
   other-modules:
       Paths_reflex_server
   hs-source-dirs:
@@ -103,3 +103,4 @@ executable exe
     , uuid
     , wai
     , warp
+  ghc-options: -Wno-unused-packages

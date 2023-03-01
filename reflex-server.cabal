@@ -1,4 +1,4 @@
-cabal-version: 1.12
+cabal-version: 2.2
 
 -- This file has been generated from package.yaml by hpack version 0.34.7.
 --
@@ -19,19 +19,8 @@ extra-source-files:
     LICENSE
     Changelog.md
 
-source-repository head
-  type: git
-  location: https://github.com/jappeace/reflex-server
-
-library
-  exposed-modules:
-      Reflex.Server
-      Reflex.Server.WaiApp
-  other-modules:
-      Paths_reflex_server
-  hs-source-dirs:
-      src
-  default-extensions:
+common common-options
+  default-extensions: 
       EmptyCase
       FlexibleContexts
       FlexibleInstances
@@ -51,7 +40,34 @@ library
       StandaloneDeriving
       OverloadedStrings
       TypeApplications
-  ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints -Wincomplete-record-updates -Widentities -Wcpp-undef -fwarn-tabs -Wpartial-fields -fdefer-diagnostics -Wunused-packages
+      NumericUnderscores
+
+  ghc-options:
+    -O2 -Wall -Werror -Wincomplete-uni-patterns
+    -Wincomplete-record-updates -Widentities -Wredundant-constraints
+    -Wcpp-undef -fwarn-tabs -Wpartial-fields
+    -fdefer-diagnostics -Wunused-packages
+    -fenable-th-splice-warnings
+
+  build-depends:
+      base                         >=4.9.1.0 && <5
+
+  default-language: Haskell2010
+
+
+source-repository head
+  type: git
+  location: https://github.com/jappeace/reflex-server
+
+library
+  import: common-options
+  exposed-modules:
+      Reflex.Server
+      Reflex.Server.WaiApp
+  other-modules:
+      Paths_reflex_server
+  hs-source-dirs:
+      src
   build-depends:
       async
     , base >=4.7 && <5
@@ -63,35 +79,14 @@ library
     , uuid
     , wai
     , warp
-  default-language: Haskell2010
 
 executable exe
+  import: common-options
   main-is: Main.hs
   other-modules:
       Paths_reflex_server
   hs-source-dirs:
       app
-  default-extensions:
-      EmptyCase
-      FlexibleContexts
-      FlexibleInstances
-      InstanceSigs
-      MultiParamTypeClasses
-      LambdaCase
-      MultiWayIf
-      NamedFieldPuns
-      TupleSections
-      DeriveFoldable
-      DeriveFunctor
-      DeriveGeneric
-      DeriveLift
-      DeriveTraversable
-      DerivingStrategies
-      GeneralizedNewtypeDeriving
-      StandaloneDeriving
-      OverloadedStrings
-      TypeApplications
-  ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns -Wredundant-constraints -Wincomplete-record-updates -Widentities -Wcpp-undef -fwarn-tabs -Wpartial-fields -fdefer-diagnostics -Wunused-packages -threaded -rtsopts -with-rtsopts=-N -Wno-unused-packages
   build-depends:
       async
     , base >=4.7 && <5
@@ -109,4 +104,4 @@ executable exe
     , uuid
     , wai
     , warp
-  default-language: Haskell2010
+  ghc-options: -Wno-unused-packages

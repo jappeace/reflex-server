@@ -12,17 +12,12 @@ where
 import Control.Concurrent.STM.TQueue
 import Control.Monad.Reader
 import Control.Monad.STM
-import Data.UUID
 import qualified Data.UUID.V4 as V4
 import Network.Wai
+import Reflex.Server.RequestToken
 
 -- | I can't spell this
 type Que = TQueue
-
--- | the request token is used to associate a request with a response.
---   this is required because reflex does it's own thread management.
-newtype RequestToken = MkRequestToken { _untoken :: UUID}
-  deriving (Eq)
 
 aRequestThread ::
   Que (RequestToken, Request) ->

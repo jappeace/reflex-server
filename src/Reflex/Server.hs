@@ -9,9 +9,13 @@ module Reflex.Server
     defaultSettings,
     writeResponse,
     HasServerEvents(..),
+    holdRequest
   )
 where
 
+import Network.HTTP.Types(internalServerError500)
+import Reflex.Server.RequestToken
+import qualified Data.UUID as UUID
 import Control.Concurrent.Async
 import Control.Concurrent.STM.TQueue
 import Control.Monad.Identity (Identity (..))
@@ -37,6 +41,21 @@ deriving instance (ReflexHost t, MonadFix m)       => MonadFix (ReflexServerT t 
 deriving instance (ReflexHost t, MonadIO m)        => MonadIO (ReflexServerT t m)
 deriving instance ReflexHost t                     => MonadTrans (ReflexServerT t)
 deriving instance (ReflexHost t, TriggerEvent t m) => TriggerEvent t (ReflexServerT t m)
+deriving instance (ReflexHost t, MonadHold t m)    => MonadHold t (ReflexServerT t m)
+deriving instance (ReflexHost t, MonadSample t m)    => MonadSample t (ReflexServerT t m)
+instance ( Reflex t
+         , ReflexHost t
+         , Adjustable t m
+         ) => Adjustable t (ReflexServerT t m) where
+  runWithReplace ma evmb =
+    MkReflexServerT $ runWithReplace (unReflexServerT ma) (unReflexServerT <$> evmb)
+  traverseDMapWithKeyWithAdjust kvma dMapKV = MkReflexServerT .
+    traverseDMapWithKeyWithAdjust (\ka -> unReflexServerT . kvma ka) dMapKV
+  traverseDMapWithKeyWithAdjustWithMove kvma dMapKV = MkReflexServerT .
+    traverseDMapWithKeyWithAdjustWithMove (\ka -> unReflexServerT . kvma ka) dMapKV
+  traverseIntMapWithKeyWithAdjust f im = MkReflexServerT .
+    traverseIntMapWithKeyWithAdjust (\ka -> unReflexServerT . f ka) im
+
 
 type ConcreteReflexServer =
   ReflexServerT Spider (PostBuildT Spider (PerformEventT Spider (SpiderHost Global)))
@@ -113,3 +132,14 @@ writeResponse ev = do
   performEvent_ $
     (\req -> liftIO $ atomically $ writeTQueue que req)
       <$> ev
+
+holdRequest :: (MonadHold t m, Adjustable t m) =>
+  Event t (m (RequestToken, Response)) -> m (Event t (RequestToken, Response))
+holdRequest newChild =
+  updated <$>
+  holdView (pure (MkRequestToken UUID.nil, responseLBS internalServerError500 [] "initial, this shouldn't be found")) newChild
+
+holdView :: (MonadHold t m, Adjustable t m) => m a -> Event t (m a) -> m (Dynamic t a)
+holdView child0 newChild = do
+  (result0, newResult) <- runWithReplace child0 newChild
+  holdDyn result0 newResult

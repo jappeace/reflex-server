@@ -66,12 +66,14 @@ library
       Reflex.Server.WaiApp
   other-modules:
       Paths_reflex_server
+      Reflex.Server.RequestToken
   hs-source-dirs:
       src
   build-depends:
       async
     , base >=4.7 && <5
     , dependent-sum
+    , http-types
     , mtl
     , ref-tf
     , reflex
